@@ -1,0 +1,18 @@
+version: '3.8'
+services: # <--- This line is CRUCIAL
+  compiler-service: # <--- This line must be INDENTED exactly two spaces under 'services:'
+    build:
+      context: ./compiler-service
+      dockerfile: Dockerfile
+    container_name: compiler-service
+    ports:
+      - '8000:8000'
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    working_dir: /usr/src/app
+    command: npm start
+  # If you have other services (like 'client' or 'server'), they would also be indented under 'services:'
+  # client-service:
+  #   build: ...
+  # server-service:
+  #   build: ...

@@ -1,0 +1,220 @@
+/* client/app/login/login.module.css */
+
+/*
+   Local theme variables for login page.
+   These are duplicated to ensure independent theming as requested.
+*/
+.darkTheme {
+    --bg-primary: #000000; /* Pure black */
+    --bg-secondary: #121215;
+    --bg-tertiary: #1e1e22;
+    --bg-input: #0d0d0d;
+    --bg-output: #0a0a0a;
+    --bg-navbar: rgba(0, 0, 0, 0.6);
+    --bg-card-transparent: rgba(0, 0, 0, 0.5);
+    --bg-glass-btn: rgba(0,0,0,0.3);
+
+    --text-color: #ffffff;
+    --text-muted: #d0d0d0;
+    --text-light-contrast: #ffffff;
+    --text-dark-contrast: #000000;
+
+    --border-color: rgba(255, 255, 255, 0.15);
+    --border-input: rgba(255, 255, 255, 0.08);
+
+    --accent-main: #FF7F00;
+    --accent-light: #FF9A00;
+    --accent-blue: #007bff;
+    --accent-purple: #8a2be2;
+
+    --glow-subtle: rgba(255, 127, 0, 0.2);
+    --glow-light: rgba(255, 127, 0, 0.4);
+    --glow-medium: rgba(255, 127, 0, 0.6);
+    --glow-strong: rgba(255, 127, 0, 0.8);
+
+    --shadow-orange-light: rgba(255, 102, 0, 0.3);
+    --shadow-orange-medium: rgba(255, 102, 0, 0.1);
+    --shadow-orange-strong: rgba(255, 102, 0, 0.7);
+    --shadow-orange-intense: rgba(255, 102, 0, 0.9);
+}
+
+.lightTheme {
+    --bg-primary: #f0f2f5;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #e9ecef;
+    --bg-input: #f8f9fa;
+    --bg-output: #ffffff;
+    --bg-navbar: rgba(255, 255, 255, 0.8);
+    --bg-card-transparent: rgba(255, 255, 255, 0.7);
+    --bg-glass-btn: rgba(255,255,255,0.6);
+
+    --text-color: #343a40;
+    --text-muted: #6c757d;
+    --text-light-contrast: #000000;
+    --text-dark-contrast: #ffffff;
+
+    --border-color: #dee2e6;
+    --border-input: #ced4da;
+
+    --accent-main: #007bff;
+    --accent-light: #0056b3;
+    --accent-blue: #007bff;
+    --accent-purple: #6f42c1;
+
+    --glow-subtle: rgba(0, 123, 255, 0.1);
+    --glow-light: rgba(0, 123, 255, 0.2);
+    --glow-medium: rgba(0, 123, 255, 0.3);
+    --glow-strong: rgba(0, 123, 255, 0.4);
+
+    --shadow-orange-light: rgba(0, 123, 255, 0.1);
+    --shadow-orange-medium: rgba(0, 123, 255, 0.05);
+    --shadow-orange-strong: rgba(0, 123, 255, 0.2);
+    --shadow-orange-intense: rgba(0, 123, 255, 0.3);
+}
+
+
+/* ==== AUTH CONTAINER & CARD STYLES (Moved from globals.css) ==== */
+.auth-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 80px); /* Adjust if navbar height changes */
+    padding: 2rem;
+    background-color: var(--bg-primary); /* Use local variable */
+    color: var(--text-color); /* Use local variable */
+    overflow: hidden;
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+.auth-card {
+    background: var(--bg-card-transparent); /* Use local variable */
+    border: 1px solid var(--border-color); /* Use local variable */
+    backdrop-filter: blur(12px);
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 0 25px var(--shadow-orange-light), 0 0 40px var(--shadow-orange-medium); /* Use local variables */
+    z-index: 1;
+}
+
+.auth-card h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-light-contrast); /* Use local variable */
+    text-align: center;
+}
+
+.auth-card input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1.2rem;
+    border-radius: 10px;
+    background: var(--bg-input); /* Use local variable */
+    border: 1px solid var(--border-input); /* Use local variable */
+    color: var(--text-color); /* Use local variable */
+    font-size: 1rem;
+    transition: all 0.3s ease, transform 0.3s ease;
+}
+
+.auth-card input:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 15px var(--glow-medium); /* Use local variable */
+}
+
+.auth-card input:focus {
+    outline: none;
+    border: 1px solid var(--accent-main); /* Use local variable */
+    box-shadow: 0 0 18px var(--glow-strong); /* Use local variable */
+}
+
+/* ==== Button Primary (Moved from globals.css) ==== */
+.btn-primary {
+    background: linear-gradient(to right, var(--accent-main), var(--accent-light)); /* Use variables */
+    color: var(--text-dark-contrast); /* Use variable */
+    padding: 0.6rem 1.4rem;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 0 20px var(--shadow-orange-strong), 0 0 30px var(--shadow-orange-medium); /* Use variables */
+}
+
+.btn-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px var(--shadow-orange-intense), 0 0 50px var(--glow-medium); /* Use variables */
+}
+
+
+/* Background elements (these can remain global if they are truly universal backgrounds) */
+/* If you want them to also be themeable per page, move them here and use variables */
+.auth-bg-code {
+    position: absolute;
+    top: 8%;
+    left: 5%;
+    font-size: 4rem;
+    color: rgba(255, 255, 255, 0.05); /* This can stay as it's a very subtle background effect */
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    white-space: nowrap;
+    z-index: 0;
+    user-select: none;
+    letter-spacing: 2px;
+    text-shadow: 0 0 25px var(--glow-subtle); /* Use local variable */
+    animation: floatX 6s ease-in-out infinite;
+}
+
+.auth-bg-img {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 360px;
+    max-width: 50vw;
+    opacity: 0.09;
+    z-index: 0;
+    filter: drop-shadow(0 0 25px var(--glow-subtle)); /* Use local variable */
+    pointer-events: none;
+    animation: floatY 4.5s ease-in-out infinite;
+    transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.auth-bg-img:hover {
+    transform: scale(1.03);
+    filter: drop-shadow(0 0 45px var(--glow-strong)); /* Use local variable */
+}
+
+/* Responsive styles for auth backgrounds (moved from globals.css) */
+@media (max-width: 768px) {
+    .auth-bg-code {
+        font-size: 2.4rem;
+        top: 14%;
+        left: 10%;
+    }
+
+    .auth-bg-img {
+        width: 240px;
+    }
+}
+
+/* Animations (moved from globals.css) */
+@keyframes floatY {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes floatX {
+    0%, 100% {
+        transform: translateX(0px);
+    }
+    50% {
+        transform: translateX(8px);
+    }
+}

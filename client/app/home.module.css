@@ -1,0 +1,893 @@
+/* client/app/home.module.css */
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap'); /* For splash screen text */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'); /* For general text */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&display=swap'); /* For the Hero Title */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap'); /* For sleek coding text/icons */
+
+
+/*
+   Define theme-specific variables within the main theme classes.
+   These variables will be local to the scope of elements wrapped by .darkTheme or .lightTheme.
+*/
+.darkTheme {
+    --bg-primary: #000000; /* PURE BLACK background for dark theme - unchanged */
+    --bg-secondary: #121215;
+    --bg-tertiary: #1e1e22; /* For feature visual background */
+    --text-color: #ffffff;
+    --text-muted: #d0d0d0;
+    --gray-text: #c0c0c0;
+    --border-color: #333;
+    --shadow-strong: rgba(0,0,0,0.5);
+    --shadow-medium: rgba(40,40,40,0.2);
+
+    /* Metallic Orange Accent Colors & Glows */
+    --accent-main: #FF7F00; /* Safety Orange - a strong, vibrant orange */
+    --accent-light: #FF9A00; /* A slightly brighter, yet still rich orange for highlights */
+
+    --glow-strong: rgba(255, 127, 0, 0.6); /* Based on accent-main */
+    --glow-medium: rgba(255, 127, 0, 0.4);
+    --glow-light: rgba(255, 127, 0, 0.2);
+    --glow-subtle: rgba(255, 154, 0, 0.3); /* Based on accent-light, slightly softer glow */
+
+    /* For elements that previously had a 'cyan' or 'gold' glow, now a vibrant orange glow */
+    --glow-secondary-strong: rgba(255, 154, 0, 0.5);
+    --glow-secondary-medium: rgba(255, 154, 0, 0.4);
+    --glow-secondary-light: rgba(255, 154, 0, 0.5); /* For reason card icons etc. */
+}
+
+.lightTheme {
+    --bg-primary: #f0f0f0;
+    --bg-secondary: #e8e8e8;
+    --bg-tertiary: #d0d0d0; /* For feature visual background */
+    --text-color: #1a1a1a;
+    --text-muted: #404040;
+    --gray-text: #404040;
+    --border-color: #ddd;
+    --shadow-strong: rgba(0,0,0,0.1);
+    --shadow-medium: rgba(255,255,255,0.2);
+
+    /* Metallic Orange Accent Colors & Glows (consistent with dark theme hue) */
+    --accent-main: #FF7F00;
+    --accent-light: #FF9A00;
+
+    --glow-strong: rgba(255, 127, 0, 0.6);
+    --glow-medium: rgba(255, 127, 0, 0.4);
+    --glow-light: rgba(255, 127, 0, 0.2);
+    --glow-subtle: rgba(255, 154, 0, 0.3);
+
+    --glow-secondary-strong: rgba(255, 154, 0, 0.5);
+    --glow-secondary-medium: rgba(255, 154, 0, 0.4);
+    --glow-secondary-light: rgba(255, 154, 0, 0.5);
+}
+
+
+/* Base styles for the main container - now uses theme variables */
+.homepage {
+    font-family: 'Inter', sans-serif;
+    transition: background-color 0.5s ease, color 0.5s ease;
+    min-height: 100vh; /* Ensure it takes full height for content */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Apply theme background/text color directly to the .homepage element */
+.darkTheme.homepage {
+    background-color: var(--bg-primary);
+    color: var(--text-color);
+}
+.lightTheme.homepage {
+    background-color: var(--bg-primary);
+    color: var(--text-color);
+}
+
+
+/* Splash Screen */
+.splash {
+    background-color: #000000; /* Pure black for splash */
+    display: flex;
+    flex-direction: column; /* To stack logo and text */
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+}
+
+.splash-logo-container {
+    margin-bottom: 20px; /* Space between logo and text */
+    opacity: 0;
+    animation: splash-logo-fade-in 0.8s forwards;
+    animation-delay: 0.2s; /* Delay logo slightly */
+}
+
+.splash-logo {
+    width: 100px; /* Adjust size as needed */
+    height: 100px;
+    filter: drop-shadow(0 0 15px rgba(255, 127, 0, 0.8)); /* Orange glow for logo */
+}
+
+.splash-text-container {
+    display: flex;
+}
+
+.splash-char {
+    font-family: 'Orbitron', sans-serif; /* New font style */
+    font-size: 5.5rem; /* Increased font size for impact */
+    font-weight: bold;
+    color: #fff;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: splash-char-in 0.6s forwards, splash-char-glow 1.5s infinite alternate 0.8s;
+    /* splash-char-in for initial appearance, splash-char-glow for pulsing effect */
+}
+
+/* New Keyframes for splash screen */
+@keyframes splash-logo-fade-in {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes splash-char-in {
+    from { opacity: 0; transform: translateY(20px); filter: blur(5px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@keyframes splash-char-glow {
+    0% { text-shadow: 0 0 5px rgba(255, 127, 0, 0.5), 0 0 15px rgba(255, 127, 0, 0.3); }
+    50% { text-shadow: 0 0 10px rgba(255, 127, 0, 0.8), 0 0 25px rgba(255, 127, 0, 0.6); }
+    100% { text-shadow: 0 0 5px rgba(255, 127, 0, 0.5), 0 0 15px rgba(255, 127, 0, 0.3); }
+}
+
+
+/* Navigation Bar */
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 5%;
+    backdrop-filter: blur(5px);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-radius: 0 0 10px 10px;
+}
+.darkTheme .nav {
+    background: linear-gradient(180deg, rgba(15,15,17,0.9) 0%, rgba(15,15,17,0.7) 100%);
+    box-shadow: 0 2px 10px var(--shadow-strong);
+}
+.lightTheme .nav {
+    background: linear-gradient(180deg, rgba(245,245,245,0.9) 0%, rgba(245,245,245,0.7) 100%);
+    box-shadow: 0 2px 10px var(--shadow-strong);
+}
+
+.logo-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo-group {
+    display: flex;
+    align-items: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    /* Add transition for smooth hover effects on contained elements */
+    transition: transform 0.3s ease;
+}
+
+/* Hover effect for the entire logo-group */
+.logo-group:hover {
+    transform: translateY(-2px); /* Slight lift */
+}
+
+.logo-icon {
+    height: 35px; /* Adjust size for navbar */
+    margin-right: 10px;
+    filter: drop-shadow(0 0 5px rgba(255, 127, 0, 0.5)); /* Subtle orange glow for navbar logo */
+    transition: filter 0.3s ease; /* Smooth transition for icon glow */
+}
+
+/* Make logo icon glow stronger on hover of the group */
+.logo-group:hover .logo-icon {
+    filter: drop-shadow(0 0 10px var(--glow-strong));
+}
+
+.logo-text {
+    /* Base styles for the text part of the logo */
+    transition: color 0.3s ease, text-shadow 0.3s ease; /* Smooth transition for text effects */
+}
+
+.darkTheme .logo-text {
+    color: var(--text-color);
+    text-shadow: 0 0 8px var(--glow-secondary-medium); /* Metallic Orange glow (initial) */
+}
+.lightTheme .logo-text {
+    color: var(--text-color);
+    text-shadow: none; /* No initial glow in light theme */
+}
+
+/* Hover effect for the text part of the logo (triggered by hovering over .logo-group) */
+.darkTheme .logo-group:hover .logo-text {
+    color: var(--accent-main); /* Brighter orange color on hover */
+    text-shadow: 0 0 15px var(--glow-strong), 0 0 30px var(--glow-medium); /* Stronger glow on hover */
+}
+.lightTheme .logo-group:hover .logo-text {
+    color: var(--accent-main); /* Orange color on hover */
+    text-shadow: 0 0 10px rgba(255, 127, 0, 0.3), 0 0 20px rgba(255, 127, 0, 0.1); /* Subtle orange glow on hover */
+}
+
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    font-size: 1.05rem;
+    transition: color 0.3s ease;
+}
+.darkTheme .nav-links a {
+    color: var(--gray-text);
+}
+.lightTheme .nav-links a {
+    color: var(--gray-text);
+}
+.nav-links a:hover {
+    color: var(--accent-main); /* Metallic Orange hover color */
+}
+
+.btn-primary {
+    background-color: var(--accent-main); /* Metallic Orange */
+    color: var(--text-color);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 1.05rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 0 15px var(--glow-medium); /* Metallic Orange glow */
+}
+.btn-primary:hover {
+    background-color: #CC6600; /* Darker orange on hover for metallic depth */
+    box-shadow: 0 0 25px var(--glow-strong); /* Stronger metallic orange glow */
+    transform: translateY(-2px);
+}
+
+.theme-toggle-btn {
+    background: none;
+    border: 1px solid;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.5rem;
+}
+.darkTheme .theme-toggle-btn {
+    border-color: var(--accent-main); /* Metallic Orange border */
+    color: var(--accent-main); /* Metallic Orange color */
+}
+.lightTheme .theme-toggle-btn {
+    border-color: #ccc;
+    color: #333;
+}
+.theme-toggle-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px var(--glow-light); /* Metallic Orange glow */
+}
+
+
+/* Hero Section */
+.hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: calc(100vh - 80px);
+    padding: 0 5%;
+    overflow: hidden;
+}
+.darkTheme .hero {
+    background: radial-gradient(circle at center, #1a1a20 0%, var(--bg-primary) 70%); /* Pure black background */
+}
+.lightTheme .hero {
+    background: radial-gradient(circle at center, #e0e0e0 0%, var(--bg-primary) 70%);
+}
+
+.hero-visual {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    animation: hero-visual-pulse 4s infinite alternate;
+    z-index: 0;
+}
+.darkTheme .hero-visual {
+    background: radial-gradient(circle, rgba(255,127,0,0.05) 0%, transparent 70%); /* Metallic Orange glow */
+}
+.lightTheme .hero-visual {
+    background: radial-gradient(circle, rgba(0,0,0,0.02) 0%, transparent 70%);
+}
+
+@keyframes hero-visual-pulse {
+    from { transform: scale(0.95); opacity: 0.8; }
+    to { transform: scale(1.05); opacity: 1; }
+}
+
+.badge {
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    z-index: 1;
+    color: var(--accent-main); /* Metallic Orange */
+}
+.darkTheme .badge {
+    background-color: var(--glow-light); /* Metallic Orange glow background */
+    border: 1px solid var(--accent-main); /* Metallic Orange border */
+}
+.lightTheme .badge {
+    background-color: rgba(255,127,0,0.1); /* Light metallic orange background */
+    border: 1px solid rgba(255,127,0,0.5); /* Metallic Orange border */
+}
+
+/* Updated Hero Title */
+.hero-title {
+    font-family: 'Outfit', sans-serif; /* Sleek and professional font style */
+    font-size: 3.5rem; /* Decreased font size for a less broad look */
+    font-weight: 600; /* Slightly less bold for sleekness */
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+    z-index: 1;
+}
+.darkTheme .hero-title {
+    color: var(--text-color);
+    text-shadow: 0 0 20px rgba(255,127,0,0.5), 0 0 40px var(--glow-subtle); /* Metallic Orange glows */
+}
+.lightTheme .hero-title {
+    color: var(--text-color);
+    text-shadow: none;
+}
+
+.hero-subtext {
+    font-size: 1.4rem;
+    max-width: 800px;
+    margin-bottom: 3rem;
+    z-index: 1;
+}
+.darkTheme .hero-subtext {
+    color: var(--text-muted);
+}
+.lightTheme .hero-subtext {
+    color: var(--gray-text);
+}
+
+.hero-btns {
+    z-index: 1;
+}
+
+.btn-cta {
+    background: linear-gradient(45deg, var(--accent-main), var(--accent-light)); /* Metallic Orange gradient */
+    color: var(--text-color);
+    padding: 1.2rem 2.5rem;
+    border-radius: 10px;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 25px var(--glow-strong); /* Strong metallic orange glow */
+}
+.btn-cta:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px rgba(255,127,0,0.8); /* Even stronger metallic orange glow */
+}
+
+
+/* Why Choose CodeClash? Section */
+.why-choose-section {
+    padding: 6rem 5%;
+    text-align: center;
+    border-radius: 15px;
+    margin: 4rem 5%;
+}
+.darkTheme .why-choose-section {
+    background-color: var(--bg-secondary);
+    box-shadow: inset 0 0 20px var(--shadow-strong);
+}
+.lightTheme .why-choose-section {
+    background-color: var(--bg-secondary);
+    box-shadow: inset 0 0 20px var(--shadow-strong);
+}
+
+.section-title {
+    font-size: 3.2rem;
+    font-weight: bold;
+    margin-bottom: 4rem;
+}
+.darkTheme .section-title {
+    color: var(--text-color);
+    text-shadow: 0 0 10px var(--glow-subtle); /* Metallic Orange subtle glow */
+}
+.lightTheme .section-title {
+    color: var(--text-color);
+    text-shadow: none;
+}
+
+.reason-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2.5rem;
+    justify-content: center;
+}
+
+.reason-card {
+    padding: 2.5rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+.darkTheme .reason-card {
+    background: linear-gradient(145deg, #2a2a2e, #1a1a1d);
+    box-shadow: 5px 5px 15px var(--shadow-strong), -5px -5px 15px var(--shadow-medium);
+    border: 1px solid var(--border-color);
+}
+.lightTheme .reason-card {
+    background: linear-gradient(145deg, #fafafa, #e0e0e0);
+    box-shadow: 5px 5px 15px var(--shadow-strong), -5px -5px 15px var(--shadow-medium);
+    border: 1px solid var(--border-color);
+}
+.reason-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 25px rgba(255,127,0,0.3); /* Metallic Orange glow on hover */
+}
+
+.reason-card .icon {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    color: var(--accent-light); /* Lighter Metallic Orange */
+    text-shadow: 0 0 15px var(--glow-secondary-light); /* Yellowish-orange glow */
+}
+
+.reason-card h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+}
+.darkTheme .reason-card h3 {
+    color: var(--text-color);
+}
+.lightTheme .reason-card h3 {
+    color: var(--text-color);
+}
+
+.reason-card p {
+    font-size: 1.1rem;
+}
+.darkTheme .reason-card p {
+    color: var(--gray-text);
+}
+.lightTheme .reason-card p {
+    color: var(--gray-text);
+}
+
+
+/* Features Section */
+.features-section {
+    padding: 6rem 5%;
+}
+.darkTheme .features-section {
+    background-color: var(--bg-primary); /* Pure black background */
+}
+.lightTheme .features-section {
+    background-color: var(--bg-primary);
+}
+
+.features-section .section-title {
+    margin-bottom: 5rem;
+    text-align: center;
+}
+
+.feature-block {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6rem;
+    gap: 3rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    flex-wrap: wrap; /* Allow wrapping for responsiveness */
+    justify-content: center; /* Center items when wrapped */
+}
+
+.feature-block:last-child {
+    margin-bottom: 0;
+}
+
+.feature-block.reverse {
+    flex-direction: row-reverse;
+}
+.feature-block.reverse .feature-content {
+    text-align: right;
+}
+.feature-block:not(.reverse) .feature-content {
+    text-align: left;
+}
+
+
+.feature-visual {
+    flex: 1;
+    min-width: 300px;
+    height: 300px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid;
+}
+.darkTheme .feature-visual {
+    background-color: var(--bg-tertiary);
+    box-shadow: 0 0 30px var(--glow-light); /* Metallic Orange glow */
+    border-color: var(--border-color);
+}
+.lightTheme .feature-visual {
+    background-color: var(--bg-tertiary);
+    box-shadow: 0 0 10px var(--shadow-strong);
+    border-color: var(--border-color);
+}
+
+/* Updated .feature-visual span for sleek coding icons */
+.feature-visual span {
+    font-family: 'IBM Plex Mono', monospace; /* Sleek coding font */
+    font-size: 3.5rem; /* Slightly decreased for a less 'broad' look */
+    font-weight: 400; /* Regular weight for a sleek, professional appearance */
+}
+.darkTheme .feature-visual span {
+    color: var(--accent-light); /* Lighter Metallic Orange */
+}
+.lightTheme .feature-visual span {
+    color: var(--accent-main); /* Metallic Orange for icons in light theme */
+}
+
+.feature-content {
+    flex: 1;
+    min-width: 300px;
+}
+
+.feature-content h3 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+.darkTheme .feature-content h3 {
+    color: var(--text-color);
+}
+.lightTheme .feature-content h3 {
+    color: var(--text-color);
+}
+
+.feature-content p {
+    font-size: 1.2rem;
+}
+.darkTheme .feature-content p {
+    color: var(--gray-text);
+}
+.lightTheme .feature-content p {
+    color: var(--gray-text);
+}
+
+
+/* Secondary Call to Action / Join Us Section */
+.cta-section {
+    padding: 6rem 5%;
+    text-align: center;
+    border-radius: 15px;
+    margin: 4rem 5%;
+}
+.darkTheme .cta-section {
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%); /* Pure black */
+    box-shadow: inset 0 0 20px var(--shadow-strong);
+}
+.lightTheme .cta-section {
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    box-shadow: inset 0 0 20px var(--shadow-strong);
+}
+
+.cta-section h2 {
+    font-size: 3.2rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+}
+.darkTheme .cta-section h2 {
+    color: var(--text-color);
+    text-shadow: 0 0 10px var(--glow-subtle); /* Metallic Orange subtle glow */
+}
+.lightTheme .cta-section h2 {
+    color: var(--text-color);
+    text-shadow: none;
+}
+
+.cta-section p {
+    font-size: 1.4rem;
+    max-width: 800px;
+    margin: 0 auto 3rem auto;
+}
+.darkTheme .cta-section p {
+    color: var(--text-muted);
+}
+.lightTheme .cta-section p {
+    color: var(--gray-text);
+}
+
+.cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.btn-secondary {
+    background: none;
+    padding: 1.2rem 2.5rem;
+    border-radius: 10px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.darkTheme .btn-secondary {
+    border: 2px solid var(--accent-main); /* Metallic Orange border */
+    color: var(--accent-main); /* Metallic Orange color */
+}
+.lightTheme .btn-secondary {
+    border: 2px solid rgba(255,127,0,0.5); /* Metallic Orange border */
+    color: var(--accent-main); /* Metallic Orange color */
+}
+.btn-secondary:hover {
+    background: rgba(255,127,0,0.1); /* Subtle metallic orange background on hover */
+    box-shadow: 0 0 15px rgba(255,127,0,0.3); /* Metallic Orange glow */
+}
+
+
+/* Footer */
+.footer {
+    padding: 3rem 5%;
+    border-top: 1px solid;
+    text-align: center;
+    margin-top: auto;
+}
+.darkTheme .footer {
+    background-color: #000000; /* Pure black background */
+    border-color: rgba(255,127,0,0.5); /* Metallic Orange border */
+}
+.lightTheme .footer {
+    background-color: #d0d0d0;
+    border-color: #cccccc;
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.footer .logo-group {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+.darkTheme .footer .logo-group {
+    color: var(--text-color);
+    text-shadow: 0 0 5px rgba(255,127,0,0.2); /* Metallic Orange glow */
+}
+.lightTheme .footer .logo-group {
+    color: var(--text-color);
+    text-shadow: none;
+}
+
+.footer-links {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.footer-links a {
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+.darkTheme .footer-links a {
+    color: var(--gray-text);
+}
+.lightTheme .footer-links a {
+    color: var(--gray-text);
+}
+.footer-links a:hover {
+    color: var(--accent-main); /* Metallic Orange hover */
+}
+
+.social-icons {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.social-icons a {
+    font-size: 1.8rem;
+    transition: color 0.3s ease;
+}
+.darkTheme .social-icons a {
+    color: var(--gray-text);
+}
+.lightTheme .social-icons a {
+    color: var(--gray-text);
+}
+.social-icons a:hover {
+    color: var(--accent-main); /* Metallic Orange hover */
+}
+
+.copyright {
+    font-size: 0.9rem;
+}
+.darkTheme .copyright {
+    color: #808080;
+}
+.lightTheme .copyright {
+    color: #606060;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    /* Splash Screen Text */
+    .splash-char {
+        font-size: 4rem; /* Adjusted for medium screens */
+    }
+
+    .nav {
+        padding: 1rem 3%;
+    }
+    .logo-group {
+        font-size: 1.5rem;
+    }
+    .nav-links {
+        gap: 1rem;
+    }
+    .nav-links a {
+        font-size: 0.9rem;
+    }
+    .btn-primary, .btn-cta, .btn-secondary {
+        padding: 0.8rem 1.5rem;
+        font-size: 1.2rem;
+    }
+    /* Updated Hero Title for medium screens */
+    .hero-title {
+        font-size: 2.6rem; /* Adjusted for medium screens */
+    }
+    .hero-subtext {
+        font-size: 1.1rem;
+    }
+    .section-title {
+        font-size: 2.5rem;
+        margin-bottom: 3rem;
+    }
+    .reason-card {
+        padding: 1.5rem;
+    }
+    .reason-card h3 {
+        font-size: 1.5rem;
+    }
+    .reason-card p {
+        font-size: 1rem;
+    }
+    .feature-block {
+        flex-direction: column !important;
+        text-align: center !important;
+        gap: 2rem;
+        margin-bottom: 4rem;
+    }
+    .feature-block .feature-content {
+        text-align: center !important;
+    }
+    .feature-visual {
+        min-width: 250px;
+        height: 250px;
+    }
+    /* Updated .feature-visual span for medium screens */
+    .feature-visual span {
+        font-size: 3rem; /* Adjusted for medium screens */
+    }
+    .cta-section h2 {
+        font-size: 2.5rem;
+    }
+    .cta-section p {
+        font-size: 1.1rem;
+    }
+    .cta-buttons {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .footer-links, .social-icons {
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Splash Screen Text */
+    .splash-char {
+        font-size: 3rem; /* Adjusted for small screens */
+    }
+
+    .nav {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem 2%;
+    }
+    .nav-links {
+        margin-top: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+    }
+    /* Updated Hero Title for small screens */
+    .hero-title {
+        font-size: 2rem; /* Adjusted for small screens */
+    }
+    .hero-subtext {
+        font-size: 0.9rem;
+    }
+    .btn-primary, .btn-cta, .btn-secondary {
+        padding: 0.6rem 1rem;
+        font-size: 1rem;
+    }
+    .section-title {
+        font-size: 2rem;
+    }
+    .reason-card {
+        padding: 1rem;
+    }
+    .reason-card h3 {
+        font-size: 1.2rem;
+    }
+    .reason-card p {
+        font-size: 0.9rem;
+    }
+    .feature-visual {
+        min-width: 200px;
+        height: 200px;
+    }
+    /* Updated .feature-visual span for small screens */
+    .feature-visual span {
+        font-size: 2.5rem; /* Adjusted for small screens */
+    }
+    .cta-section h2 {
+        font-size: 2rem;
+    }
+    .cta-section p {
+        font-size: 1rem;
+    }
+    .footer {
+        padding: 2rem 2%;
+    }
+    .footer .logo-group {
+        font-size: 1.2rem;
+    }
+    .footer-links a, .social-icons a {
+        font-size: 1.2rem;
+    }
+    .copyright {
+        font-size: 0.8rem;
+    }
+}
