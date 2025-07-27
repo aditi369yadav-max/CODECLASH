@@ -1,13 +1,13 @@
-// client/app/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from './home.module.css'; // Import the CSS module
 
+
 export default function HomePage() {
   const [showSplash, setShowSplash] = useState(true);
-  const [isDarkTheme, setIsDarkTheme] = useState(true); // State for theme toggle
+  const [isDarkTheme, setIsDarkTheme] = useState(true);
 
   useEffect(() => {
     // This effect now unconditionally shows the splash screen for 3.5 seconds
@@ -28,7 +28,6 @@ export default function HomePage() {
             <span
               key={idx}
               className={styles['splash-char']}
-              // CORRECTED: Use backticks (`) for template literals
               style={{ animationDelay: `${0.5 + idx * 0.08}s` }} /* Adjust delay for staggered text */
             >
               {char}
@@ -40,7 +39,7 @@ export default function HomePage() {
   }
 
   return (
-    // CORRECTED: Apply the theme class directly to the main container using template literals
+    // Apply the theme class directly to the main container using template literals
     <main className={`${styles.homepage} ${isDarkTheme ? styles.darkTheme : styles.lightTheme}`}>
       {/* Navigation Bar */}
       <nav className={styles.nav}>
@@ -74,6 +73,7 @@ export default function HomePage() {
           {/* Theme Toggle Button */}
           <button
             onClick={() => setIsDarkTheme(!isDarkTheme)}
+// Use toggleTheme from context
             className={styles['theme-toggle-btn']}
           >
             {isDarkTheme ? '☀' : '🌙'}
@@ -87,8 +87,6 @@ export default function HomePage() {
 
         <h1 className={styles['hero-title']}>
           The Algorithm Awaits. Are You Ready?
-
-
         </h1>
         <p className={styles['hero-subtext']}>
           "Beyond the solution lies understanding. Unravel the complexities, and forge a deeper connection with code."
@@ -197,7 +195,6 @@ export default function HomePage() {
               Monitor your performance, review past submissions, identify areas for improvement, and
               personalize your learning journey.
             </p>
-            {/* CORRECTED: Removed the extra closing div tag here */}
           </div>
         </div>
       </section>
@@ -248,15 +245,10 @@ export default function HomePage() {
               Terms of Service
             </Link>
           </div>
-          <div className={styles['social-icons']}>
-            {/* Placeholder Social Icons - Using simple characters for now */}
-            <a href="#">G</a>
-            <a href="#">T</a>
-            <a href="#">L</a>
-          </div>
+         
         </div>
         <p className={styles.copyright}>
-          © 2025 CODECLASH. All rights reserved.
+          Made by "ADITI YADAV"
         </p>
       </footer>
     </main>

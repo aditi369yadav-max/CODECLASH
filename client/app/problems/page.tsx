@@ -225,7 +225,7 @@ export default function ProblemsPage() {
         <div className={homeStyles['footer-content']}>
           <div className={homeStyles['logo-group']}>
             <img src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} />
-            <span className={homeStyles['logo-text']}>CodeClash</span>
+            <span className={homeStyles['logo-text']}>CODECLASH</span>
           </div>
           <div className={homeStyles['footer-links']}>
             <Link href="/about">About Us</Link>
