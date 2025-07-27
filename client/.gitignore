@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Ignore private key files
+keys/compiler-service.pem
+keys2/server.pem
