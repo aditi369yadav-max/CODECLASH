@@ -8,8 +8,8 @@
 
 
 /*
-   Define theme-specific variables within the main theme classes.
-   These variables will be local to the scope of elements wrapped by .darkTheme or .lightTheme.
+    Define theme-specific variables within the main theme classes.
+    These variables will be local to the scope of elements wrapped by .darkTheme or .lightTheme.
 */
 .darkTheme {
     --bg-primary: #000000; /* PURE BLACK background for dark theme - unchanged */

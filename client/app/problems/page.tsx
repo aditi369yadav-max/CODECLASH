@@ -1,6 +1,6 @@
 // client/app/problems/page.tsx
 'use client';
-
+import Image from 'next/image';
 import { useEffect, useState } from "react";
 import Link from 'next/link';
 import styles from './problem-list.module.css'; // Import Problem LIST specific styles
@@ -18,8 +18,9 @@ interface Problem {
 }
 
 export default function ProblemsPage() {
-  const [problems, setProblems] = useState<Problem[]>([]);
-  const [filtered, setFiltered] = useState<Problem[]>([]); // This will now hold the same data as 'problems' if backend filters
+  // Removed 'problems' state as it was assigned but never used for rendering or other logic.
+  // 'filtered' will now directly hold the data fetched from the backend (already filtered).
+  const [filtered, setFiltered] = useState<Problem[]>([]);
   const [difficultyFilter, setDifficultyFilter] = useState<string>("All");
   const [tagFilter, setTagFilter] = useState<string>("All");
   const [search, setSearch] = useState<string>("");
@@ -52,8 +53,8 @@ export default function ProblemsPage() {
         }
         const data: Problem[] = await response.json();
 
-        setProblems(data); // problems state now holds the data fetched from the backend (already filtered)
-        setFiltered(data); // filtered is set to the same data as problems because backend handles filtering
+        // Removed setProblems(data); as 'problems' state is no longer needed.
+        setFiltered(data); // 'filtered' is now the single source of truth for the displayed problems
 
         // Extract all unique tags from the fetched data to populate the tag filter buttons
         const uniqueTags = new Set<string>();
@@ -94,7 +95,14 @@ export default function ProblemsPage() {
       <nav className={homeStyles.nav}>
         <Link href="/" className={homeStyles['logo-link']}>
           <div className={homeStyles['logo-group']}>
-            <img src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} />
+            <Image
+              src="/logo.svg"
+              alt="Codeclash Logo"
+              width={32}
+              height={32}
+              className={homeStyles['logo-icon']}
+            />
+
             <span className={homeStyles['logo-text']}>CodeClash</span>
           </div>
         </Link>
@@ -118,7 +126,14 @@ export default function ProblemsPage() {
 
       <main className={styles.mainContent}>
         <h1 className={styles.pageTitle}>
-          <img src="/problem-icon.svg" alt="Problem Icon" className={styles.pageTitleIcon} />
+          <Image
+            src="/problem-icon.svg"
+            alt="Problem Icon"
+            width={32}
+            height={32}
+            className={styles.pageTitleIcon}
+          />
+
           <span className={styles.pageTitleText}>Algorithmic Challenges</span>
         </h1>
 
@@ -224,7 +239,13 @@ export default function ProblemsPage() {
       <footer className={homeStyles.footer}>
         <div className={homeStyles['footer-content']}>
           <div className={homeStyles['logo-group']}>
-            <img src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} />
+            <Image
+              src="/logo.svg"
+              alt="Codeclash Logo"
+              width={32}
+              height={32}
+              className={homeStyles['logo-icon']}
+            />
             <span className={homeStyles['logo-text']}>CODECLASH</span>
           </div>
           <div className={homeStyles['footer-links']}>

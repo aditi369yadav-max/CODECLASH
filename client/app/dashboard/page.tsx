@@ -1,134 +1,23 @@
 // client/app/dashboard/page.tsx
 'use client';
 
+// Import all necessary interfaces from your types file
+import { DashboardBackendData } from '../types/dashboard';
+
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Cell, PieChart, Pie, Legend as RechartsLegend // Renamed to avoid conflict
+  BarChart, Bar, Cell, PieChart, Pie // REMOVED: Legend
 } from 'recharts';
 
 // Import shared styles
 import homeStyles from '../home.module.css'; // For Navbar and Footer
 import styles from './dashboard.module.css'; // For Dashboard specific styles
 
-// --- Interfaces for Backend Data (Matching dashboardController.js output) ---
-interface ProfileData {
-  username: string;
-  handle: string; // Assuming 'handle' is also sent
-  rank: number;
-  avatar: string;
-  rating: number; // Added based on backend controller
-  maxRating: number; // Added based on backend controller
-}
 
-interface StatsData {
-  totalSolved: number;
-  easySolved: number;
-  mediumSolved: number;
-  hardSolved: number;
-  totalProblems: number;
-  totalSubmissions: number;
-  acceptedSubmissions: number;
-  rejectedSubmissions: number;
-  acceptanceRate: number;
-  problemsSolvedChange?: number; // <--- ADDED THIS FIELD (OPTIONAL)
-}
-
-interface CommunityData {
-  views: number;
-  solutions: number;
-  discuss: number;
-  reputation: number;
-}
-
-interface LanguageData {
-  name: string;
-  solved: number;
-}
-
-interface HeatmapData {
-  dailySubmissions: { date: string; count: number; }[];
-  totalActiveDays: number;
-  maxStreak: number;
-}
-
-interface PerformanceTrendEntry {
-  name: string; // e.g., "Jan 2025"
-  rating: number; // Assuming monthlyPerformance maps to rating history
-}
-
-interface SkillTreeProgress {
-  // Define structure based on your User model
-  [key: string]: any; // Placeholder, define properly if used
-}
-
-interface Streaks {
-  dailySolveStreak: number;
-  // Other streak types if any
-  [key: string]: any; // Placeholder
-}
-
-interface AlgorithmicPerformance {
-  // Define structure based on your User model
-  [key: string]: any; // Placeholder
-}
-
-interface CommunityContributions {
-  // Define structure based on your User model
-  [key: string]: any; // Placeholder
-}
-
-interface HistoricalMetrics {
-  // Define structure based on your User model
-  [key: string]: any; // Placeholder
-}
-
-interface LanguageProficiency {
-  // Define structure based on your User model
-  [key: string]: any; // Placeholder
-}
-
-interface AchievementTimelineEntry {
-  // Define structure based on your User model
-  [key: string]: any; // Placeholder
-}
-
-interface PersonalizedRecommendation {
-  id: string;
-  title: string;
-  difficulty: string;
-  reason?: string; // Optional, as your mock data has it, but backend might not
-}
-
-interface RecentSubmission { // <--- NEW INTERFACE FOR RECENT SUBMISSIONS
-  id: string;
-  problem: string;
-  verdict: string;
-  language: string;
-  time: string;
-}
-
-// Main Dashboard Data Interface (matches backend's dashboardData object)
-interface DashboardBackendData {
-  profile: ProfileData;
-  stats: StatsData;
-  community: CommunityData;
-  languages: LanguageData[];
-  heatmap: HeatmapData;
-  performanceTrend: PerformanceTrendEntry[];
-  skillTreeProgress: SkillTreeProgress;
-  streaks: Streaks;
-  algorithmicPerformance: AlgorithmicPerformance;
-  communityHelpStatus: CommunityContributions;
-  historicalMetrics: HistoricalMetrics;
-  languageProficiency: LanguageProficiency;
-  achievementTimeline: AchievementTimelineEntry[];
-  personalizedRecommendations: PersonalizedRecommendation[];
-  recentSubmissions: RecentSubmission[]; // <--- ADDED THIS FIELD
-}
-
-// Client-side processed Heatmap Day interface
+// Client-side processed Heatmap Day interface (This one is specific to the frontend processing, so it stays here)
 interface ClientHeatmapDay {
   date: string;
   dayOfWeek: number;
@@ -165,9 +54,10 @@ export default function DashboardPage() {
     const dateMap = new Map<string, number>();
     data.forEach(d => dateMap.set(d.date, d.count));
 
+    // Generate data for the last 'numDays' days
     for (let i = 0; i < numDays; i++) {
       const date = new Date(today);
-      date.setDate(today.getDate() - (numDays - 1 - i)); // Go back in time
+      date.setDate(today.getDate() - (numDays - 1 - i)); // Iterate from earliest to latest date
       const dateString = date.toISOString().split('T')[0];
 
       const dayOfWeek = date.getDay(); // 0 for Sunday, 6 for Saturday
@@ -193,42 +83,52 @@ export default function DashboardPage() {
     // Group by week for rendering (7 days per column)
     const weeks: (ClientHeatmapDay | null)[][] = [];
     let currentWeek: (ClientHeatmapDay | null)[] = [];
-    let firstDayOffset = processedData[0] ? processedData[0].dayOfWeek : 0; // Day of week of the first day in data
 
-    // Fill leading empty days if the year doesn't start on a Sunday
-    for (let i = 0; i < firstDayOffset; i++) {
-      currentWeek.push(null); // Placeholder for empty cells
+    // Calculate the number of leading nulls needed for the first week
+    // The first day of data's dayOfWeek (0=Sun, 6=Sat) determines how many nulls precede it.
+    // E.g., if first day is Wed (dayOfWeek 3), we need 3 nulls for Sun, Mon, Tue.
+    const firstDayInProcessedData = processedData[0];
+    const firstDayActualDayOfWeek = firstDayInProcessedData ? firstDayInProcessedData.dayOfWeek : 0;
+
+    for (let i = 0; i < firstDayActualDayOfWeek; i++) {
+        currentWeek.push(null);
     }
 
-    processedData.forEach((day) => {
-      currentWeek.push(day);
-      if (currentWeek.length === 7) {
-        weeks.push(currentWeek);
-        currentWeek = [];
-      }
+    // currentColumnIndex was unused, so removed.
+    const monthLabels: { month: string; col: number }[] = [];
+    let lastMonthAdded = -1;
+
+    processedData.forEach((day, index) => {
+        // Add month label for the first day of a new month in the first week of that month
+        if (day.month !== lastMonthAdded) {
+            // Find the week index where this month starts.
+            // This is complex as it depends on the exact grid layout.
+            // For simplicity, we'll mark the column index of the first day of the month.
+            // The actual rendering logic in JSX will need to place this correctly.
+            const totalDaysProcessedSoFar = index + firstDayActualDayOfWeek;
+            const weekIndex = Math.floor(totalDaysProcessedSoFar / 7);
+
+            monthLabels.push({
+                month: monthNames[day.month],
+                col: weekIndex // This 'col' refers to the column in the grid
+            });
+            lastMonthAdded = day.month;
+        }
+
+        currentWeek.push(day);
+        if (currentWeek.length === 7) {
+            weeks.push(currentWeek);
+            currentWeek = [];
+            // currentColumnIndex++; // Removed as it was unused
+        }
     });
+
     if (currentWeek.length > 0) {
-      // Fill trailing empty days
+      // Fill trailing empty days if the last week is not full
       while (currentWeek.length < 7) {
         currentWeek.push(null);
       }
       weeks.push(currentWeek);
-    }
-
-    // Generate month labels positioning
-    const monthLabels: { month: string; col: number }[] = [];
-    let colIndex = 0;
-    let currentMonth = -1; // Track current month to add labels only once per month
-    for (let i = 0; i < weeks.length; i++) {
-      const firstDayInWeek = weeks[i].find(d => d !== null);
-      if (firstDayInWeek && firstDayInWeek.month !== currentMonth) {
-        currentMonth = firstDayInWeek.month;
-        monthLabels.push({
-          month: monthNames[currentMonth],
-          col: colIndex // Column index where this month starts
-        });
-      }
-      colIndex++;
     }
 
     return { weeks, monthLabels };
@@ -280,9 +180,13 @@ export default function DashboardPage() {
           setHeatmapMonthLabels([]);
         }
 
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Failed to fetch dashboard data:", err);
-        setError(`Failed to load dashboard: ${err.message}`);
+        let errorMessage = "An unknown error occurred.";
+        if (err instanceof Error) {
+          errorMessage = err.message;
+        }
+        setError(`Failed to load dashboard: ${errorMessage}`);
         setDashboardData(null); // Clear data on error
         setIsLoggedIn(false); // Ensure login status is false on any fetch error
       } finally {
@@ -315,8 +219,24 @@ export default function DashboardPage() {
     }
   };
 
+  // Type for Recharts Tooltip Props
+  interface RechartsTooltipProps {
+    active?: boolean;
+    payload?: Array<{ // <-- FIXED: More specific type for payload
+      dataKey?: string;
+      name?: string;
+      value: number; // Assuming value is always a number for charts
+      payload?: { // Recharts sometimes nests original data here
+        [key: string]: unknown; // Use unknown for nested payload if its structure varies
+      };
+      // Add other properties if you consistently use them and want type safety
+      // e.g., color?: string;
+    }>;
+    label?: string | number;
+  }
+
   // Custom Tooltip for Recharts (Pie/Bar/Line Charts)
-  const RechartsCustomTooltip = ({ active, payload, label }: any) => {
+  const RechartsCustomTooltip = ({ active, payload, label }: RechartsTooltipProps) => {
     if (active && payload && payload.length) {
       // For Pie Chart, payload[0].name is the difficulty (Easy, Medium, Hard)
       // For Line Chart, label is the month, payload[0].value is rating
@@ -328,7 +248,7 @@ export default function DashboardPage() {
             {payload[0].name && payload[0].name !== label ? `${payload[0].name}: ` : ''}
             {payload[0].value}
             {payload[0].dataKey === 'rating' ? ' Rating' : ''}
-            {payload[0].dataKey === 'solved' ? ' Solved' : ''}
+            {payload[0].dataKey === 'solved' || payload[0].dataKey === 'problemsSolved' ? ' Solved' : ''} {/* Adjusted for 'problemsSolved' */}
           </p>
         </div>
       );
@@ -343,7 +263,7 @@ export default function DashboardPage() {
         <nav className={homeStyles.nav}>
           <Link href="/" className={homeStyles['logo-link']}>
             <div className={homeStyles['logo-group']}>
-              <img src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} />
+              <Image src="/logo.svg" alt="Codeclash Logo" width={32} height={32} className={homeStyles['logo-icon']} /> {/* FIXED: Used Image component */}
               <span className={homeStyles['logo-text']}>CodeClash</span>
             </div>
           </Link>
@@ -356,7 +276,7 @@ export default function DashboardPage() {
               <button className={homeStyles['btn-primary']}>Sign Up</button>
             </Link>
             <button
-              onClick={() => setIsDarkTheme(!isDarkTheme)}
+              onClick={() => setIsDarkTheme(!isDarkTheme)} // CORRECTED: Toggles the state
               className={homeStyles['theme-toggle-btn']}
             >
               {isDarkTheme ? '☀' : '🌙'}
@@ -369,7 +289,7 @@ export default function DashboardPage() {
         <footer className={homeStyles.footer}>
           <div className={homeStyles['footer-content']}>
             <div className={homeStyles['logo-group']}>
-              <img src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} />
+              <Image src="/logo.svg" alt="Codeclash Logo" width={32} height={32} className={homeStyles['logo-icon']} /> {/* FIXED: Used Image component */}
               <span className={homeStyles['logo-text']}>CodeClash</span>
             </div>
             <div className={homeStyles['footer-links']}>
@@ -399,7 +319,7 @@ export default function DashboardPage() {
         <nav className={homeStyles.nav}>
           <Link href="/" className={homeStyles['logo-link']}>
             <div className={homeStyles['logo-group']}>
-              <img src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} />
+              <Image src="/logo.svg" alt="Codeclash Logo" width={32} height={32} className={homeStyles['logo-icon']} /> {/* FIXED: Used Image component */}
               <span className={homeStyles['logo-text']}>CodeClash</span>
             </div>
           </Link>
@@ -412,7 +332,7 @@ export default function DashboardPage() {
               <button className={homeStyles['btn-primary']}>Sign Up</button>
             </Link>
             <button
-              onClick={() => setIsDarkTheme(!isDarkTheme)}
+              onClick={() => setIsDarkTheme(!isDarkTheme)} // CORRECTED: Toggles the state
               className={homeStyles['theme-toggle-btn']}
             >
               {isDarkTheme ? '☀' : '🌙'}
@@ -428,7 +348,7 @@ export default function DashboardPage() {
         <footer className={homeStyles.footer}>
           <div className={homeStyles['footer-content']}>
             <div className={homeStyles['logo-group']}>
-              <img src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} />
+              <Image src="/logo.svg" alt="Codeclash Logo" width={32} height={32} className={homeStyles['logo-icon']} /> {/* FIXED: Used Image component */}
               <span className={homeStyles['logo-text']}>CodeClash</span>
             </div>
             <div className={homeStyles['footer-links']}>
@@ -444,7 +364,7 @@ export default function DashboardPage() {
             </div>
           </div>
           <p className={homeStyles.copyright}>
-            © 2025 CODECLASH. All rights reserved.
+            &copy; 2025 CODECLASH. All rights reserved.
           </p>
         </footer>
       </div>
@@ -458,7 +378,7 @@ export default function DashboardPage() {
       <nav className={homeStyles.nav}>
         <Link href="/" className={homeStyles['logo-link']}>
           <div className={homeStyles['logo-group']}>
-            <img src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} />
+            <Image src="/logo.svg" alt="Codeclash Logo" width={32} height={32} className={homeStyles['logo-icon']} /> {/* FIXED: Used Image component */}
             <span className={homeStyles['logo-text']}>CodeClash</span>
           </div>
         </Link>
@@ -472,7 +392,7 @@ export default function DashboardPage() {
             <button className={homeStyles['btn-primary']}>Sign Up</button>
           </Link>
           <button
-            onClick={() => setIsDarkTheme(!isDarkTheme)}
+            onClick={() => setIsDarkTheme(!isDarkTheme)} // CORRECTED: Toggles the state
             className={homeStyles['theme-toggle-btn']}
           >
             {isDarkTheme ? '☀' : '🌙'}
@@ -486,7 +406,8 @@ export default function DashboardPage() {
           {/* User Profile in Sidebar */}
           <div className={styles.sidebarSection}>
             <div className={styles.sidebarProfile}>
-              <img src={dashboardData?.profile.avatar || "https://placehold.co/120x120/2b2b2b/e0e0e0?text=CM"} alt="User Avatar" className={styles.sidebarAvatar} />
+              {/* Using a placeholder image, so Image component is fine here too */}
+              <Image src={dashboardData?.profile.avatar || "https://placehold.co/120x120/2b2b2b/e0e0e0?text=CM"} alt="User Avatar" width={120} height={120} className={styles.sidebarAvatar} /> {/* FIXED: Used Image component */}
               <h3 className={styles.sidebarUsername}>{dashboardData?.profile.username || "Guest User"}</h3>
               <p className={styles.sidebarRank}>Rank {dashboardData?.profile.rank || "N/A"}</p>
             </div>
@@ -520,7 +441,7 @@ export default function DashboardPage() {
               dashboardData.languages.map((lang, index) => (
                 <div key={index} className={styles.languageItem}>
                   <span>{lang.name}</span>
-                  <span className={styles.languageSolvedCount}>{lang.solved} problems solved</span>
+                  <span className={styles.languageSolvedCount}>{lang.problemsSolved} problems solved</span> {/* Corrected from lang.solved */}
                 </div>
               ))
             ) : (
@@ -566,7 +487,7 @@ export default function DashboardPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={dashboardData?.performanceTrend || []} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                    <XAxis dataKey="name" stroke="var(--text-muted)" />
+                    <XAxis dataKey="monthYear" stroke="var(--text-muted)" /> {/* Corrected from 'name' to 'monthYear' */}
                     <YAxis stroke="var(--text-muted)" />
                     <Tooltip
                       wrapperStyle={{ outline: 'none' }}
@@ -599,13 +520,15 @@ export default function DashboardPage() {
                       dataKey="value"
                       labelLine={false}
                     >
-                      {[
-                        { name: 'Easy', value: dashboardData?.stats.easySolved || 0, color: 'var(--status-success)' },
-                        { name: 'Medium', value: dashboardData?.stats.mediumSolved || 0, color: 'var(--accent-light)' },
-                        { name: 'Hard', value: dashboardData?.stats.hardSolved || 0, color: 'var(--status-error)' },
-                      ].map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
+                      {(dashboardData?.stats.easySolved !== undefined && dashboardData?.stats.mediumSolved !== undefined && dashboardData?.stats.hardSolved !== undefined) && // Added conditional check
+                        [
+                          { name: 'Easy', value: dashboardData.stats.easySolved, color: 'var(--status-success)' },
+                          { name: 'Medium', value: dashboardData.stats.mediumSolved, color: 'var(--accent-light)' },
+                          { name: 'Hard', value: dashboardData.stats.hardSolved, color: 'var(--status-error)' },
+                        ].map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))
+                      }
                     </Pie>
                     <Tooltip
                       wrapperStyle={{ outline: 'none' }}
@@ -646,7 +569,7 @@ export default function DashboardPage() {
                       itemStyle={{ color: 'var(--accent-light)' }}
                       content={RechartsCustomTooltip}
                     />
-                    <Bar dataKey="solved">
+                    <Bar dataKey="problemsSolved"> {/* Corrected from dataKey="solved" to "problemsSolved" */}
                       {(dashboardData?.languages || []).map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={
                             index === 0 ? 'var(--accent-blue)' :
@@ -665,25 +588,32 @@ export default function DashboardPage() {
           <div className={styles.heatmapSection}>
             <h2 className={styles.sectionHeading}>Submission Activity (Last 365 Days)</h2>
             <div className={styles.heatmapGrid}>
-                {/* Day Labels (Sunday to Saturday) */}
-                <div className={styles.heatmapLabel}></div> {/* Empty corner */}
-                <div className={`${styles.heatmapLabel} ${styles.heatmapDayLabel}`}>Sun</div>
-                <div className={`${styles.heatmapLabel} ${styles.heatmapDayLabel}`}>Mon</div>
-                <div className={`${styles.heatmapLabel} ${styles.heatmapDayLabel}`}>Tue</div>
-                <div className={`${styles.heatmapLabel} ${styles.heatmapDayLabel}`}>Wed</div>
-                <div className={`${styles.heatmapLabel} ${styles.heatmapDayLabel}`}>Thu</div>
-                <div className={`${styles.heatmapLabel} ${styles.heatmapDayLabel}`}>Fri</div>
-                <div className={`${styles.heatmapLabel} ${styles.heatmapDayLabel}`}>Sat</div>
+                {/* Empty cell for the top-left corner */}
+                <div className={styles.heatmapLabel}></div>
 
-                {/* Month Labels and Heatmap Cells */}
-                {heatmapWeeks.length > 0 && heatmapMonthLabels.map((monthLabel, monthIndex) => (
-                    <div key={`month-${monthIndex}`} style={{ gridColumn: monthLabel.col + 2, gridRow: 1 }}>
-                        <div className={`${styles.heatmapLabel} ${styles.heatmapMonthLabel}`}>
-                            {monthLabel.month}
-                        </div>
+                {/* Month Labels (horizontal at the top) */}
+                {heatmapMonthLabels.map((monthLabel, index) => (
+                    <div
+                        key={`month-label-${index}`}
+                        className={`${styles.heatmapLabel} ${styles.heatmapMonthLabel}`}
+                        style={{ gridColumn: monthLabel.col + 2, gridRow: 1 }} // +2 for day labels column and the empty corner
+                    >
+                        {monthLabel.month}
                     </div>
                 ))}
-                {/* Render heatmap cells only if data is available (after client-side generation) */}
+
+                {/* Day Labels (vertical on the left) */}
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((dayName, index) => (
+                    <div
+                        key={`day-label-${index}`}
+                        className={`${styles.heatmapLabel} ${styles.heatmapDayLabel}`}
+                        style={{ gridColumn: 1, gridRow: index + 2 }} // +2 for the month labels row and empty corner
+                    >
+                        {dayName}
+                    </div>
+                ))}
+
+                {/* Heatmap Cells */}
                 {heatmapWeeks.length > 0 ? (
                     heatmapWeeks.map((week, weekIndex) => (
                         week.map((day: ClientHeatmapDay | null, dayIndex: number) => (
@@ -692,8 +622,8 @@ export default function DashboardPage() {
                                     key={`${weekIndex}-${dayIndex}`}
                                     className={`${styles.heatmapCell} ${styles[`heatmapLevel${day.level}`]}`}
                                     style={{
-                                        gridColumn: weekIndex + 2, // +2 for day labels column and first empty cell
-                                        gridRow: day.dayOfWeek + 2, // +2 for month labels row and first empty cell
+                                        gridColumn: weekIndex + 2, // +2 for day labels column and the empty corner
+                                        gridRow: day.dayOfWeek + 2, // +2 for month labels row and the empty corner
                                     }}
                                     title={`${day.date}: ${day.count} submissions`}
                                 ></div>
@@ -710,64 +640,126 @@ export default function DashboardPage() {
             </div>
           </div>
 
-
-          {/* Recent Activity & Submissions Section */}
-          <div className={styles.recentActivitySection}>
-            <h2 className={styles.sectionHeading}>Latest Submissions</h2>
-            <div className={styles.submissionList}>
-              {(dashboardData?.recentSubmissions && dashboardData.recentSubmissions.length > 0) ? (
-                dashboardData.recentSubmissions.map((submission) => (
-                  <div key={submission.id} className={styles.submissionCard}>
-                    <div className={styles.submissionInfo}>
-                      <Link href={`/problems/detail/${submission.problem.replace(/\s/g, '-')}`} className={styles.submissionProblemTitle}>
+          {/* Recent Submissions */}
+          <div className={styles.recentSubmissionsSection}>
+            <h2 className={styles.sectionHeading}>Recent Submissions</h2>
+            {(dashboardData?.recentSubmissions && dashboardData.recentSubmissions.length > 0) ? (
+              <div className={styles.recentSubmissionsList}>
+                {dashboardData.recentSubmissions.map((submission, index) => (
+                  <div key={index} className={styles.submissionItem}>
+                    <div className={styles.submissionProblem}>
+                      <Link href={`/problems/${submission.id}`} className={styles.problemLink}>
                         {submission.problem}
                       </Link>
-                      <p className={styles.submissionDetails}>
-                        {submission.language} • {submission.time}
-                      </p>
+                      <span className={`${styles.submissionVerdict} ${getVerdictClass(submission.verdict)}`}>
+                        {submission.verdict}
+                      </span>
                     </div>
-                    <span className={`${styles.submissionVerdict} ${getVerdictClass(submission.verdict)}`}>
-                      {submission.verdict}
-                    </span>
+                    <div className={styles.submissionDetails}>
+                      <span className={styles.submissionLanguage}>{submission.language}</span>
+                      <span className={styles.submissionTime}>{submission.time}</span>
+                    </div>
                   </div>
-                ))
-              ) : (
-                <p className={styles.noDataMessage}>No recent submissions found.</p>
-              )}
-            </div>
-            <button className={styles.viewAllSubmissionsBtn}>View All Submissions</button>
+                ))}
+              </div>
+            ) : (
+              <p className={styles.noDataMessage}>No recent submissions.</p>
+            )}
           </div>
 
-          {/* Suggested Problems / Learning Path Section */}
-          <div className={styles.suggestedProblemsSection}>
-            <h2 className={styles.sectionHeading}>Recommended for You</h2>
-            <div className={styles.problemGrid}>
-              {(dashboardData?.personalizedRecommendations && dashboardData.personalizedRecommendations.length > 0) ? (
-                dashboardData.personalizedRecommendations.map((problem) => (
-                  <div key={problem.id} className={styles.suggestedProblemCard}>
-                    <h3 className={styles.suggestedProblemTitle}>{problem.title}</h3>
-                    <span className={`${styles.suggestedProblemDifficulty} ${getDifficultyClass(problem.difficulty)}`}>
-                      {problem.difficulty}
-                    </span>
-                    <p className={styles.recommendationReason}>{problem.reason || "No specific reason provided."}</p>
-                    <Link href={`/problems/detail/${problem.id}`}>
-                      <button className={styles.solveNowBtn}>Solve Now</button>
+        {/* Personalized Recommendations */}
+          {/*
+          <div className={`${styles.recommendationsSection} ${styles.dashboardCard}`}>
+            <h2 className={styles.sectionHeading}>Personalized Recommendations</h2>
+            {(dashboardData?.personalizedRecommendations && dashboardData.personalizedRecommendations.length > 0) ? (
+              <div className={styles.recommendationsList}>
+                {dashboardData.personalizedRecommendations.map((rec, index) => (
+                  <div key={index} className={styles.recommendationItem}>
+                    <Link href={`/problems/${rec.id}`} className={styles.problemLink}>
+                      {rec.title}
                     </Link>
+                    <span className={`${styles.recommendationDifficulty} ${getDifficultyClass(rec.difficulty)}`}>
+                      {rec.difficulty}
+                    </span>
+                    {rec.reason && <p className={styles.recommendationReason}>{rec.reason}</p>}
                   </div>
-                ))
-              ) : (
-                <p className={styles.noDataMessage}>No personalized recommendations available.</p>
-              )}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <p className={styles.noDataMessage}>No personalized recommendations available at this time.</p>
+            )}
           </div>
+          */}
+
+          {/* Achievement Timeline */}
+          <div className={styles.achievementTimelineSection}>
+            <h2 className={styles.sectionHeading}>Achievement Timeline</h2>
+            {(dashboardData?.achievementTimeline && dashboardData.achievementTimeline.length > 0) ? (
+              <div className={styles.timelineList}>
+                {dashboardData.achievementTimeline.map((achievement, index) => (
+                  <div key={index} className={styles.timelineItem}>
+                    <span className={styles.timelineDate}>{new Date(achievement.date).toLocaleDateString()}</span>
+                    <p className={styles.timelineDescription}>
+                      {achievement.icon && <span className={styles.timelineIcon}>{achievement.icon}</span>}
+                      {achievement.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className={styles.noDataMessage}>No achievements recorded yet.</p>
+            )}
+          </div>
+
+          {/* Skill Tree Progress */}
+          <div className={styles.skillTreeSection}>
+            <h2 className={styles.sectionHeading}>Skill Tree Progress</h2>
+            {dashboardData?.skillTreeProgress && Object.keys(dashboardData.skillTreeProgress).length > 0 ? (
+              <div className={styles.skillList}>
+                {Object.entries(dashboardData.skillTreeProgress).map(([skillName, progress], index) => (
+                  <div key={index} className={styles.skillItem}>
+                    <span className={styles.skillName}>{skillName}</span>
+                    <div className={styles.progressBar}>
+                      <div className={styles.progressFill} style={{ width: `${progress}%` }}></div>
+                    </div>
+                    <span className={styles.progressValue}>{progress}%</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className={styles.noDataMessage}>Skill tree progress not available.</p>
+            )}
+          </div>
+
+          {/* Streaks */}
+          <div className={styles.streaksSection}>
+            <h2 className={styles.sectionHeading}>Streaks</h2>
+            {dashboardData?.streaks && Object.keys(dashboardData.streaks).length > 0 ? (
+              <div className={styles.streaksList}>
+                {Object.entries(dashboardData.streaks).map(([streakName, streakValue], index) => (
+                  <div key={index} className={styles.streakItem}>
+                    <span className={styles.streakName}>{
+                      streakName === 'dailySolveStreak' ? 'Daily Solve Streak' :
+                      streakName === 'hardProblemStreak' ? 'Hard Problem Streak' :
+                      streakName === 'optimalSolutionStreak' ? 'Optimal Solution Streak' :
+                      streakName // Fallback for other streak names
+                    }</span>
+                    <span className={styles.streakValue}>{streakValue} {typeof streakValue === 'number' ? 'Days' : ''}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className={styles.noDataMessage}>No streak data available.</p>
+            )}
+          </div>
+
         </section>
       </main>
 
-      {/* Footer - Reusing homepage footer structure and styles */}
       <footer className={homeStyles.footer}>
         <div className={homeStyles['footer-content']}>
           <div className={homeStyles['logo-group']}>
-            <img src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} />
+            <Image src="/logo.svg" alt="Codeclash Logo" width={32} height={32} className={homeStyles['logo-icon']} /> {/* FIXED: Used Image component */}
             <span className={homeStyles['logo-text']}>CodeClash</span>
           </div>
           <div className={homeStyles['footer-links']}>
@@ -783,7 +775,7 @@ export default function DashboardPage() {
           </div>
         </div>
         <p className={homeStyles.copyright}>
-          © 2025 CODECLASH. All rights reserved.
+          &copy; 2025 CODECLASH. All rights reserved.
         </p>
       </footer>
     </div>

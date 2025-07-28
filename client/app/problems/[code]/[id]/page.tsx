@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Editor from '@monaco-editor/react';
 import Link from 'next/link';
+import Image from 'next/image'; // Import the Image component
 import homeStyles from '../../../home.module.css'; // Adjust path for homeStyles
 import styles from './problem-detail.module.css';
 
@@ -327,7 +328,8 @@ export default function ProblemPage() {
                 <nav className={homeStyles.nav}>
                     <Link href="/" className={homeStyles['logo-link']}>
                         <div className={homeStyles['logo-group']}>
-                            <img src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} />
+                            {/* Replaced <img> with <Image> */}
+                            <Image src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} width={32} height={32} />
                             <span className={homeStyles['logo-text']}>CodeClash</span>
                         </div>
                     </Link>
@@ -343,7 +345,7 @@ export default function ProblemPage() {
                             onClick={() => setIsDarkTheme(!isDarkTheme)}
                             className={homeStyles['theme-toggle-btn']}
                         >
-                            {isDarkTheme ? '☀' : '🌙'}
+                            {isDarkTheme ? '☀️' : '🌙'} {/* Replaced ☀ with ☀️ (full sun emoji) */}
                         </button>
                     </div>
                 </nav>
@@ -353,7 +355,8 @@ export default function ProblemPage() {
                 <footer className={homeStyles.footer}>
                     <div className={homeStyles['footer-content']}>
                         <div className={homeStyles['logo-group']}>
-                            <img src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} />
+                            {/* Replaced <img> with <Image> */}
+                            <Image src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} width={32} height={32} />
                             <span className={homeStyles['logo-text']}>CodeClash</span>
                         </div>
                         <div className={homeStyles['footer-links']}>
@@ -382,7 +385,8 @@ export default function ProblemPage() {
             <nav className={homeStyles.nav}>
                 <Link href="/" className={homeStyles['logo-link']}>
                     <div className={homeStyles['logo-group']}>
-                        <img src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} />
+                        {/* Replaced <img> with <Image> */}
+                        <Image src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} width={32} height={32} />
                         <span className={homeStyles['logo-text']}>CodeClash</span>
                     </div>
                 </Link>
@@ -399,7 +403,7 @@ export default function ProblemPage() {
                         onClick={() => setIsDarkTheme(!isDarkTheme)}
                         className={homeStyles['theme-toggle-btn']}
                     >
-                        {isDarkTheme ? '☀' : '🌙'}
+                        {isDarkTheme ? '☀️' : '🌙'} {/* Replaced ☀ with ☀️ (full sun emoji) */}
                     </button>
                 </div>
             </nav>
@@ -471,7 +475,7 @@ export default function ProblemPage() {
                     <button
                         className={`${styles.scrollToTopBtn} ${showScrollToTop ? styles.show : ''}`}
                         onClick={scrollToTop}
-                        title="Scroll to top"
+                        title={"Scroll to top"}
                     >
                         ⬆
                     </button>
@@ -498,7 +502,6 @@ export default function ProblemPage() {
                             <button className={styles.bookmarkIconBtn} title="Bookmark Problem">⭐</button>
                         </div>
                     </div>
-
                     <div className={styles.monacoEditorContainer}>
                         <Editor
                             height="100%" // Fill container height
@@ -641,7 +644,7 @@ export default function ProblemPage() {
                                         </div>
                                     )}
                                     {!isAiLoading && !aiError && !aiFeedback && (
-                                        <p className={styles.noFeedbackMessage}>Click "Get AI Code Review" to analyze your code.</p>
+                                        <p className={styles.noFeedbackMessage}>Click &quot;Get AI Code Review&quot; to analyze your code.</p>
                                     )}
                                 </div>
                             )}
@@ -664,7 +667,8 @@ export default function ProblemPage() {
             <footer className={homeStyles.footer}>
                 <div className={homeStyles['footer-content']}>
                     <div className={homeStyles['logo-group']}>
-                        <img src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} />
+                        {/* Replaced <img> with <Image> */}
+                        <Image src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} width={32} height={32} />
                         <span className={homeStyles['logo-text']}>CodeClash</span>
                     </div>
                     <div className={homeStyles['footer-links']}>
@@ -735,13 +739,13 @@ const TestCaseItem: React.FC<TestCaseItemProps> = ({ testCase, index }) => {
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
     // Derive status and icon from testCase.status
-    let displayStatus: 'passed' | 'failed' | 'pending' = 'pending';
+    // let displayStatus: 'passed' | 'failed' | 'pending' = 'pending'; // REMOVED: 'displayStatus' is assigned a value but never used.
     let statusIcon = '⏳';
     let statusClass = styles.pending; // Default class
 
     // Determine status based on backend verdict
     if (testCase.status === 'Accepted') {
-        displayStatus = 'passed';
+        // displayStatus = 'passed'; // REMOVED
         statusIcon = '✅';
         statusClass = styles.passed;
     } else if (
@@ -751,7 +755,7 @@ const TestCaseItem: React.FC<TestCaseItemProps> = ({ testCase, index }) => {
         testCase.status === 'Compilation Error' ||
         testCase.status.includes('Memory Limit Exceeded') // Catch both general and custom MLE
     ) {
-        displayStatus = 'failed';
+        // displayStatus = 'failed'; // REMOVED
         statusIcon = '❌';
         statusClass = styles.failed;
     } else if (testCase.status.includes('Custom Run')) {
@@ -760,11 +764,11 @@ const TestCaseItem: React.FC<TestCaseItemProps> = ({ testCase, index }) => {
         // So, we'll try to determine the icon/class from the `overallVerdict` string itself.
         // This makes `testCase.status` directly the verdict for custom runs.
         if (testCase.status.includes('Accepted')) {
-            displayStatus = 'passed';
+            // displayStatus = 'passed'; // REMOVED
             statusIcon = '✅';
             statusClass = styles.passed;
         } else if (testCase.status.includes('Wrong Answer') || testCase.status.includes('Error') || testCase.status.includes('Limit Exceeded')) {
-            displayStatus = 'failed';
+            // displayStatus = 'failed'; // REMOVED
             statusIcon = '❌';
             statusClass = styles.failed;
         } else {

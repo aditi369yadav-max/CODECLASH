@@ -218,3 +218,19 @@
         transform: translateX(8px);
     }
 }
+
+
+
+/* ... existing styles ... */
+
+.error-message {
+  color: #ff4d4f; /* A common red color for errors */
+  background-color: #4ba8ef; /* Light red background */
+  border: 1px solid #ff4d4f;
+  padding: 8px 12px;
+  border-radius: 5px;
+  margin-bottom: 15px; /* Space below the message */
+  text-align: center;
+  font-size: 0.9em;
+  font-weight: bold;
+}

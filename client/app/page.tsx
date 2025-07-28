@@ -1,7 +1,9 @@
+// client/app/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image'; // <--- ADD THIS IMPORT
 import styles from './home.module.css'; // Import the CSS module
 
 
@@ -21,7 +23,16 @@ export default function HomePage() {
     return (
       <div className={styles.splash}>
         <div className={styles['splash-logo-container']}>
-          <img src="/logo.svg" alt="Codeclash Logo" className={styles['splash-logo']} />
+          {/* Replaced <img> with Image for the splash logo */}
+          {/* Using 32x32 for intrinsic, assuming CSS scales it up */}
+          <Image
+            src="/logo.svg"
+            alt="Codeclash Logo"
+            className={styles['splash-logo']}
+            width={32} // Set intrinsic width
+            height={32} // Set intrinsic height
+            priority // Load this image with high priority as it's part of the initial view
+          />
         </div>
         <div className={styles['splash-text-container']}>
           {"CODECLASH".split("").map((char, idx) => (
@@ -45,8 +56,14 @@ export default function HomePage() {
       <nav className={styles.nav}>
         <Link href="/" className={styles['logo-link']}>
           <div className={styles['logo-group']}>
-            {/* Use the new SVG logo here */}
-            <img src="/logo.svg" alt="Codeclash Logo" className={styles['logo-icon']} />
+            {/* Replaced <img> with Image for the navbar logo */}
+            <Image
+              src="/logo.svg"
+              alt="Codeclash Logo"
+              className={styles['logo-icon']}
+              width={32} // Set intrinsic width
+              height={32} // Set intrinsic height
+            />
             {/* Wrap the text in a span with a new class for styling */}
             <span className={styles['logo-text']}>CODECLASH</span>
           </div>
@@ -73,7 +90,7 @@ export default function HomePage() {
           {/* Theme Toggle Button */}
           <button
             onClick={() => setIsDarkTheme(!isDarkTheme)}
-// Use toggleTheme from context
+            // Use toggleTheme from context
             className={styles['theme-toggle-btn']}
           >
             {isDarkTheme ? '☀' : '🌙'}
@@ -89,7 +106,7 @@ export default function HomePage() {
           The Algorithm Awaits. Are You Ready?
         </h1>
         <p className={styles['hero-subtext']}>
-          "Beyond the solution lies understanding. Unravel the complexities, and forge a deeper connection with code."
+          &quot;Beyond the solution lies understanding. Unravel the complexities, and forge a deeper connection with code.&quot;
         </p>
         <div className={styles['hero-btns']}>
           <Link href="/problems">
@@ -152,7 +169,7 @@ export default function HomePage() {
           <div className={styles['feature-content']}>
             <h3>Real-time Interactive Compiler</h3>
             <p>
-              "Effortlessly write, test, and debug in a versatile, instant environment."
+              &quot;Effortlessly write, test, and debug in a versatile, instant environment.&quot;
             </p>
           </div>
         </div>
@@ -226,8 +243,14 @@ export default function HomePage() {
       <footer className={styles.footer}>
         <div className={styles['footer-content']}>
           <div className={styles['logo-group']}>
-            {/* Use the new SVG logo here */}
-            <img src="/logo.svg" alt="Codeclash Logo" className={styles['logo-icon']} />
+            {/* Replaced <img> with Image for the footer logo */}
+            <Image
+              src="/logo.svg"
+              alt="Codeclash Logo"
+              className={styles['logo-icon']}
+              width={32} // Set intrinsic width
+              height={32} // Set intrinsic height
+            />
             {/* Wrap the text in a span with a new class for styling */}
             <span className={styles['logo-text']}>CodeClash</span>
           </div>
@@ -245,10 +268,15 @@ export default function HomePage() {
               Terms of Service
             </Link>
           </div>
-         
+          {/* Social Icons - If these are just text, no change needed. If they are images, they would need Image component */}
+          <div className={styles['social-icons']}>
+            <a href="#">G</a>
+            <a href="#">T</a>
+            <a href="#">L</a>
+          </div>
         </div>
         <p className={styles.copyright}>
-          Made by "ADITI YADAV"
+          Made by &quot;ADITI YADAV&quot;
         </p>
       </footer>
     </main>

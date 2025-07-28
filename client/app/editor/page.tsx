@@ -1,6 +1,7 @@
 // client/app/editor/page.tsx
 'use client';
 
+import Image from 'next/image';
 import Editor from "@monaco-editor/react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import type { editor } from 'monaco-editor'; // Import Monaco editor types
@@ -170,6 +171,9 @@ export default function CodeEditorPage() {
             console.log("🔁 Compiler Service Response:", data);
 
             setOverallVerdict(data.overallVerdict || "Unknown Verdict");
+            // The following lines assume data.testCaseResults[0] exists,
+            // which is generally true for custom runs where there's only one "test case" (the custom input).
+            // Consider adding more robust checks if this isn't always guaranteed.
             setExecutionTime(data.testCaseResults?.[0]?.time || "N/A");
             setMemoryUsage(data.testCaseResults?.[0]?.memory || "N/A");
 
@@ -188,10 +192,15 @@ export default function CodeEditorPage() {
                 setTestCaseResults([]);
             }
 
-        } catch (err: any) {
+        } catch (err: unknown) { // Changed 'any' to 'unknown'
             console.error("❌ Frontend error:", err);
             setOverallVerdict("Frontend Error");
-            setErrorLog(`❌ Error connecting to compiler service: ${err.message}`);
+            // Type narrowing for 'unknown' type
+            if (err instanceof Error) {
+                setErrorLog(`❌ Error connecting to compiler service: ${err.message}`);
+            } else {
+                setErrorLog(`❌ An unknown error occurred while connecting to compiler service.`);
+            }
             setOutput("See Error/Debug Log tab for details.");
             setActiveTab("error");
         } finally {
@@ -288,7 +297,14 @@ export default function CodeEditorPage() {
             <nav className={homeStyles.nav}>
                 <Link href="/" className={homeStyles['logo-link']}>
                     <div className={homeStyles['logo-group']}>
-                        <img src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} />
+                        <Image
+                        src="/logo.svg"
+                        alt="Codeclash Logo"
+                        width={32}         // Use appropriate dimensions
+                        height={32}
+                        className={homeStyles['logo-icon']}
+                        />
+
                         <span className={homeStyles['logo-text']}>CODECLASH</span>
                     </div>
                 </Link>
@@ -480,7 +496,13 @@ export default function CodeEditorPage() {
             <footer className={homeStyles.footer}>
                 <div className={homeStyles['footer-content']}>
                     <div className={homeStyles['logo-group']}>
-                        <img src="/logo.svg" alt="Codeclash Logo" className={homeStyles['logo-icon']} />
+                        <Image
+                        src="/logo.svg"
+                        alt="Codeclash Logo"
+                        width={32}
+                        height={32}
+                        className={homeStyles['logo-icon']}
+                        />
                         <span className={homeStyles['logo-text']}>CodeClash</span>
                     </div>
                     <div className={homeStyles['footer-links']}>

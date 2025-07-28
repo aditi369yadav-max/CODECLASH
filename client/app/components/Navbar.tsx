@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image'; // ✅ Import Next.js Image component
 
 export default function Navbar() {
   const [darkMode, setDarkMode] = useState(true);
@@ -20,7 +21,14 @@ export default function Navbar() {
     <nav className="navbar full-navbar">
       <Link href="/" className="logo-link">
         <div className="logo-group">
-          <img src="/logo.svg" alt="logo" className="logo-icon" />
+          <Image
+            src="/logo.svg"
+            alt="logo"
+            className="logo-icon"
+            width={32} // ✅ You can change this as needed
+            height={32}
+            priority // ✅ for faster loading (optional)
+          />
           <div className="logo">CODECLASH</div>
         </div>
       </Link>
