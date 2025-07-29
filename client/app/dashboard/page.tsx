@@ -210,14 +210,6 @@ export default function DashboardPage() {
   };
 
   // Helper to get difficulty class
-  const getDifficultyClass = (difficulty: string) => {
-    switch (difficulty.toLowerCase()) {
-      case 'easy': return styles.easy;
-      case 'medium': return styles.medium;
-      case 'hard': return styles.hard;
-      default: return '';
-    }
-  };
 
   // Type for Recharts Tooltip Props
   interface RechartsTooltipProps {
