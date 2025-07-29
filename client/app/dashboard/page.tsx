@@ -148,7 +148,7 @@ export default function DashboardPage() {
         };
 
         // Fetch all dashboard data from the single endpoint
-        const res = await fetch('http://localhost:5000/api/dashboard', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_AUTH_CRUD_BACKEND_URL}/api/dashboard`, {
           method: 'GET',
           headers: headers,
           credentials: 'include', // IMPORTANT: Ensures cookies are sent with the request

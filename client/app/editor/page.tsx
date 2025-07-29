@@ -161,7 +161,8 @@ export default function CodeEditorPage() {
             const problemId: string | null = null;
             const isCustomRun: boolean = true;
 
-            const res = await fetch("http://localhost:8000/run", {
+            // UPDATED: Use NEXT_PUBLIC_COMPILER_SERVICE_URL for the compiler endpoint
+            const res = await fetch(`${process.env.NEXT_PUBLIC_COMPILER_SERVICE_URL}/run`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ language, code, input, problemId, isCustomRun }),

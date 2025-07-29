@@ -44,7 +44,7 @@ export default function ProblemsPage() {
 
         // --- IMPORTANT: This is the updated API call ---
         // CORRECTED: Use backticks for template literal in fetch URL
-        const response = await fetch(`http://localhost:5000/api/problems?${queryParams.toString()}`); // Your backend API URL
+     const response = await fetch(`${process.env.NEXT_PUBLIC_AUTH_CRUD_BACKEND_URL}/api/problems?${queryParams.toString()}`); // Your backend API URL
         // --- END IMPORTANT ---
 
         if (!response.ok) {

@@ -14,7 +14,7 @@ interface AiReviewRequest {
 
 // Ensure this URL matches your compiler-service's accessible address
 // Since Docker Compose sets it up, 'http://localhost:8000' is correct when running locally
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_COMPILER_SERVICE_URL || 'http://localhost:8000';
 
 export const getAiCodeReview = async (
   code: string,

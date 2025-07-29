@@ -33,7 +33,7 @@ export default function LoginPage() {
     setLoading(true); // Set loading state to true when submission starts
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_AUTH_CRUD_BACKEND_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

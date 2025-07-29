@@ -109,7 +109,7 @@ export default function ProblemPage() {
     useEffect(() => {
         const fetchProblemData = async () => {
             try {
-                const res = await fetch(`http://localhost:5000/api/problems/${id}`);
+                  const res = await fetch(`${process.env.NEXT_PUBLIC_AUTH_CRUD_BACKEND_URL}/api/problems/${id}`);
                 if (!res.ok) {
                     throw new Error(`HTTP error! status: ${res.status}`);
                 }
@@ -157,7 +157,7 @@ export default function ProblemPage() {
         setResultsTab('Output'); // Always go to output tab for run
 
         try {
-            const res = await fetch('http://localhost:8000/run', {
+             const res = await fetch(`${process.env.NEXT_PUBLIC_COMPILER_SERVICE_URL}/run`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -208,7 +208,7 @@ export default function ProblemPage() {
         try {
             // For submission, we'd typically run against ALL test cases (including hidden ones)
             // The compiler service handles this when problemId is sent.
-            const res = await fetch('http://localhost:8000/run', { // Re-using run endpoint for simplicity and full judging
+            const res = await fetch(`${process.env.NEXT_PUBLIC_COMPILER_SERVICE_URL}/run`,  { // Re-using run endpoint for simplicity and full judging
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
