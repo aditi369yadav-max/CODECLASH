@@ -18,7 +18,7 @@ const app = express();
 // Get the frontend URL from an environment variable.
 // This allows you to use a different URL for local development vs. production.
 // If the environment variable isn't set (like during local dev), it defaults to localhost.
-const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:3000'; 
+const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 // Configure CORS to accept requests from the allowed origin.
 app.use(cors({
