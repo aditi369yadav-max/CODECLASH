@@ -1,49 +1,49 @@
-// server/app.js
+// compiler-service/app.js
 
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const cors = require('cors');
-const dotenv = require('dotenv');
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const compilerRoutes = require("./routes/compilerRoutes");
+const generateAiResponse = require("./generateAiResponse"); // Import the new AI function
 
-// Load environment variables. This is crucial for accessing process.env.FRONTEND_URL
 dotenv.config();
 
-const authRoutes = require('./routes/authRoutes');
-const problemRoutes = require('./routes/problemRoutes');
-const dashboardRoutes = require('./routes/dashboardRoutes');
-
 const app = express();
-
-// --- CORRECTION FOR VERCEL DEPLOYMENT ---
-// Get the frontend URL from an environment variable.
-// This allows you to use a different URL for local development vs. production.
-// If the environment variable isn't set (like during local dev), it defaults to localhost.
-const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:3000'; 
-
-// Configure CORS to accept requests from the allowed origin.
-app.use(cors({
-  origin: allowedOrigin,
-  credentials: true, // Crucial for sending/receiving cookies with cross-origin requests
-}));
-
+app.use(cors());
 app.use(express.json());
-app.use(cookieParser());
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/problems', problemRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-
-// Define a simple root route for testing (optional, but good for quick checks)
-app.get('/', (req, res) => {
-  res.send('API is running...');
+app.get("/", (req, res) => {
+  res.send("✅ Compiler Service is Alive!");
 });
 
-// Optional: Add basic error handling middleware if not already present
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
+app.use("/run", compilerRoutes);
+
+app.post("/ai-review", async (req, res) => {
+  const { code, language } = req.body;
+
+  if (code === undefined || code.trim() === '') {
+    return res.status(400).json({
+      success: false,
+      error: "Empty code! Please provide some code to review."
+    });
+  }
+
+  try {
+    const aiResponse = await generateAiResponse(code, language);
+    res.json({
+      success: true,
+      aiFeedback: aiResponse
+    });
+  } catch (error) {
+    console.error('Error in /ai-review:', error.message);
+    res.status(500).json({
+      success: false,
+      error: "An internal server error occurred while reviewing the code. " + error.message
+    });
+  }
 });
 
-
-module.exports = app;
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+  console.log(`🛠 Compiler server running on port ${PORT}`);
+});
