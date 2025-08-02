@@ -12,16 +12,20 @@ interface AiReviewRequest {
   language: string;
 }
 
-// Ensure this URL matches your compiler-service's accessible address
-// Since Docker Compose sets it up, 'http://localhost:8000' is correct when running locally
-const API_BASE_URL = process.env.NEXT_PUBLIC_COMPILER_SERVICE_URL || 'http://localhost:8000';
+// CORRECTION: Ensure this URL points to the compiler service backend, not the main backend.
+const COMPILER_BASE_URL = process.env.NEXT_PUBLIC_COMPILER_SERVICE_URL;
+
+// If the URL is not set, default to localhost for local development
+// This is a good fallback, but your hosted URL should be used when deployed.
+const COMPILER_URL = COMPILER_BASE_URL || 'http://localhost:8000';
 
 export const getAiCodeReview = async (
   code: string,
   language: string
 ): Promise<AiReviewResponse> => { // This function now returns the full AiReviewResponse object
   try {
-    const response = await fetch(`${API_BASE_URL}/ai-review`, {
+    // CORRECTION: Use the compiler service URL for the AI review call
+    const response = await fetch(`${COMPILER_URL}/ai-review`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
